@@ -19,23 +19,49 @@ var() enum CheckActionType {
 } checkAction;
 
 var() bool ignoreCase;
-localized var() String keyToCheck;
-localized var() String expectedValue;
+var() localized String keyToCheck;
+var() localized String expectedValue;
 
 var(Events) name eventOnCheckFailure;
+
+static final function bool canCoerceBoth(coerce int a, coerce int b) {
+  return a != 0 && b != 0;
+}
+
+static final operator(24) bool cge (coerce int a, coerce int b) {
+  return a >= b;
+}
+
+static final operator(24) bool cg (coerce int a, coerce int b) {
+  return a > b;
+}
+
+static final operator(24) bool cle (coerce int a, coerce int b) {
+  return a <= b;
+}
+
+static final operator(24) bool cl (coerce int a, coerce int b) {
+  return a < b;
+}
 
 function trigger(Actor other, Pawn eventInstigator) {
   local Inventory i;
   local KvStore kvs;
   local String value;
-  local PlayerPawn playerPawn;
 
   if (PlayerPawn(eventInstigator) == none) return;
   i = PlayerPawn(eventInstigator).inventory;
 
   while (i != none) {
-    if (KvStore(i) != none) break;
+    if (KvStore(i) != none) {
+      kvs = KvStore(i);
+      break;
+    }
     i = i.inventory;
+  }
+
+  if (kvs == none) { // todo if it is a global check, check if any player has one
+    return;
   }
 
   switch(checking) {
@@ -50,7 +76,56 @@ function trigger(Actor other, Pawn eventInstigator) {
       break;
   }
 
-  //todo
+  switch(checkAction) {
+    case CA_PRESENT:
+      if (value != "" && event != '') triggerEvent(event, other, eventInstigator); 
+      else if (value == "" && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      return;
+    case CA_NOT_PRESENT:
+      if (value != "" && event != '') triggerEvent(eventOnCheckFailure, other, eventInstigator); 
+      else if (value == "" && eventOnCheckFailure != '') triggerEvent(event, other, eventInstigator);
+      return;
+    case CA_MATCH_VALUE:
+      if (value == expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+      else if (value != expectedValue && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      return;
+    case CA_GREATER:
+      if (canCoerceBoth(value, expectedValue)) {
+        if (value cg expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value cg expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      } else {
+        if (value > expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value > expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      }
+      return;
+    case CA_GREATEREQUAL:
+      if (canCoerceBoth(value, expectedValue)) {
+        if (value cge expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value cge expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      } else {
+        if (value >= expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value >= expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      }
+      return;
+    case CA_LESS:
+      if (canCoerceBoth(value, expectedValue)) {
+        if (value cl expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value cl expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      } else {
+        if (value < expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value < expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      }
+      return;
+    case CA_LESSEQUAL:
+      if (canCoerceBoth(value, expectedValue)) {
+        if (value cle expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value cle expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      } else {
+        if (value <= expectedValue && event != '') triggerEvent(event, other, eventInstigator); 
+        else if (!(value <= expectedValue) && eventOnCheckFailure != '') triggerEvent(eventOnCheckFailure, other, eventInstigator);
+      }
+      return;
+  }
 }
 
 defaultproperties {

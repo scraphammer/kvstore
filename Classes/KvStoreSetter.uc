@@ -14,8 +14,8 @@ var() enum SetType {
 } setting;
 
 var() bool ignoreCase;
-localized var() String keyToSet;
-localized var() String newValue;
+var() localized String keyToSet;
+var() localized String newValue;
 var() bool dontOverwriteExisting;
 
 function trigger(Actor other, Pawn eventInstigator) {
