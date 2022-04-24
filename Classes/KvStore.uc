@@ -53,20 +53,28 @@ function put(string key, coerce string value, optional bool local) {
         localKeys[i] = key;
         localValues[i] = value;
         return;
+      } else if (localKeys[i] == key) {
+        localValues[i] = value;
+        return;
       }
     }
-    localKeys[localKVLength++] = key;
+    localKeys[localKVLength] = key;
     localValues[localKVLength] = value;
+    localKVLength++;
   } else {
     for (i = 0; i < globalKVLength; i++) {
       if (globalKeys[i] == "") {
         globalKeys[i] = key;
         globalValues[i] = value;
         return;
+      } else if (globalKeys[i] == key) {
+        globalValues[i] = value;
+        return;
       }
     }
-    globalKeys[globalKVLength++] = key;
+    globalKeys[globalKVLength] = key;
     globalValues[globalKVLength] = value;
+    globalKVLength++;
   }
 }
 
