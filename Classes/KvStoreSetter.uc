@@ -45,6 +45,7 @@ function trigger(Actor other, Pawn eventInstigator) {
     }
     i = i.inventory;
   }
+  
   if (kvs == none) {
     kvs = spawn(class'KvStore');
     kvs.touch(p);

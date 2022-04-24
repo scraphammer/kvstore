@@ -15,6 +15,7 @@ function PostBeginPlay() {
   local KvStoreSetter kvStoreSetter;
   local Dispatcher dispatcher;
   local KvStoreTestRunner kvStoreTestRunner;
+  local EventInstigatorFunger eventInstigatorFunger;
   if (!bPostBPInitialized) {
     bPostBPInitialized = true;
 
@@ -319,6 +320,72 @@ function PostBeginPlay() {
     kvStoreChecker.checking = KvStoreChecker.CheckType.CT_LOCAL_ONLY;
     kvStoreChecker.checkAction = KvStoreChecker.CheckActionType.CA_LESSEQUAL;
     testEvents[testEventSize++] = 'test7Set1_';
+
+    logger = spawn(class'Logger');
+    logger.tag = 'test8Log1_';
+    logger.event = tag;
+    logger.logMessage = "PASS - Test 8 - Setting a value here, then checking it elsewhere";
+    logger = spawn(class'Logger');
+    logger.tag = 'test8Log2_';
+    logger.logMessage = "FAIL - Test 8 - Setting a value here, then checking it elsewhere";
+    logger = spawn(class'Logger');
+    logger.tag = 'test8Log3_';
+    logger.logMessage = "FAIL - Test 8 - Setting a value here, then checking it elsewhere (Only one player, cannot run test)";
+    kvStoreSetter = spawn(class'KvStoreSetter');
+    kvStoreSetter.keyToSet = "test8Key1_" $ name;
+    kvStoreSetter.newValue = "test8Key1Value_" $ name;
+    kvStoreSetter.tag = 'test8Set1_';
+    kvStoreSetter.event = 'test8Funger1_';
+    kvStoreSetter.setOperation = KvStoreSetter.SetOperationType.SOT_SET;
+    kvStoreSetter.setting = KvStoreSetter.SetType.ST_GLOBAL;
+    eventInstigatorFunger = spawn(class'EventInstigatorFunger');
+    eventInstigatorFunger.tag = 'test8Funger1_';
+    eventInstigatorFunger.event = 'test8Check1_';
+    eventInstigatorFunger.eventOnlyOnePawn = 'test8Log3_';
+    kvStoreChecker = spawn(class'KvStoreChecker');
+    kvStoreChecker.keyToCheck = "test8Key1_" $ name;
+    kvStoreChecker.expectedValue = "test8Key1Value_" $ name;
+    kvStoreChecker.tag = 'test8Check1_';
+    kvStoreChecker.event = 'test8Log1_';
+    kvStoreChecker.eventOnCheckFailure = 'test8Log2_';
+    kvStoreChecker.checking = KvStoreChecker.CheckType.CT_GLOBAL_ONLY;
+    kvStoreChecker.checkAction = KvStoreChecker.CheckActionType.CA_MATCH_VALUE;
+    testEvents[testEventSize++] = 'test8Set1_';
+
+    logger = spawn(class'Logger');
+    logger.tag = 'test9Log1_';
+    logger.event = tag;
+    logger.logMessage = "PASS - Test 9 - Setting a value elsewhere, then checking it here";
+    logger = spawn(class'Logger');
+    logger.tag = 'test9Log2_';
+    logger.logMessage = "FAIL - Test 9 - Setting a value elsewhere, then checking it here";
+    logger = spawn(class'Logger');
+    logger.tag = 'test9Log3_';
+    logger.logMessage = "FAIL - Test 9 - Setting a value elsewhere, then checking it here (Only one player, cannot run test)";
+    eventInstigatorFunger = spawn(class'EventInstigatorFunger');
+    eventInstigatorFunger.tag = 'test9Funger1_';
+    eventInstigatorFunger.event = 'test9Set1_';
+    eventInstigatorFunger.eventOnlyOnePawn = 'test9Log3_';
+    kvStoreSetter = spawn(class'KvStoreSetter');
+    kvStoreSetter.keyToSet = "test9Key1_" $ name;
+    kvStoreSetter.newValue = "test9Key1Value_" $ name;
+    kvStoreSetter.tag = 'test9Set1_';
+    kvStoreSetter.setOperation = KvStoreSetter.SetOperationType.SOT_SET;
+    kvStoreSetter.setting = KvStoreSetter.SetType.ST_GLOBAL;
+    kvStoreChecker = spawn(class'KvStoreChecker');
+    kvStoreChecker.keyToCheck = "test9Key1_" $ name;
+    kvStoreChecker.expectedValue = "test9Key1Value_" $ name;
+    kvStoreChecker.tag = 'test9Check1_';
+    kvStoreChecker.event = 'test9Log1_';
+    kvStoreChecker.eventOnCheckFailure = 'test9Log2_';
+    kvStoreChecker.checking = KvStoreChecker.CheckType.CT_GLOBAL_ONLY;
+    kvStoreChecker.checkAction = KvStoreChecker.CheckActionType.CA_MATCH_VALUE;
+    dispatcher = spawn(class'Dispatcher');
+    dispatcher.tag = 'test9Dispatcher1_';
+    dispatcher.outEvents[0] = 'test9Funger1_';
+    dispatcher.outEvents[1] = 'test9Check1_';
+    dispatcher.outDelays[1] = 0.5;
+    testEvents[testEventSize++] = 'test9Dispatcher1_';
   }
 }
 
@@ -346,6 +413,7 @@ function trigger(Actor other, Pawn eventInstigator) {
   }
 
   testInProgress = true;
+  numTestsPassed = 0;
 
   log("---------------------- KvStoreTestRunner ");
 
@@ -359,7 +427,7 @@ function trigger(Actor other, Pawn eventInstigator) {
     triggerEvent(testEvents[i], other, eventInstigator); 
   }
 
-  setTimer(0.5, false);
+  setTimer(1, false);
 }
 
 defaultproperties {

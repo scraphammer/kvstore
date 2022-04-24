@@ -6,6 +6,11 @@ var(Events) name eventOnlyOnePawn;
 
 function trigger(Actor other, Pawn eventInstigator) {
   local PlayerPawn p;
+
+  if (instigator != none) {
+    triggerEvent(event, self, instigator);
+    return;
+  }
   
   foreach allactors(class'PlayerPawn', p) {
     if (p != eventInstigator) {

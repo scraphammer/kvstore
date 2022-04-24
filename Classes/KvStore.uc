@@ -8,9 +8,49 @@ var travel array<string> globalKeys;
 var travel array<string> globalValues;
 var travel int globalKVLength;
 
+var bool merged;
+
 replication {
   reliable if (Role == ROLE_Authority)
     globalKeys, globalValues, globalKVLength;
+}
+
+function destroyed() {
+  local KvStore kvs;
+  local int i;
+  if (!merged) {
+    kvs = spawn(class'KvStore');
+    for (i = 0; i < globalKVLength; i++) {
+      kvs.putSync(globalKeys[i], globalValues[i]);
+    }
+  }
+  super.destroyed();
+}
+
+function giveTo(Pawn other) {
+  merged = false;
+  super.giveTo(other);
+}
+
+function merge(KvStore kvs) {
+  local int i;
+  for (i = 0; i < kvs.globalKVLength; i++) {
+    putSync(kvs.globalKeys[i], kvs.globalValues[i]);
+  }
+  kvs.merged = true;
+  kvs.destroy();
+}
+
+function bool handlePickupQuery(Inventory item) {
+  local KvStore kvs;
+  local int i;
+	if (item.class == class) {
+    kvs = KvStore(item);
+    for (i = 0; i < kvs.globalKVLength; i++) {
+      putSync(kvs.globalKeys[i], kvs.globalValues[i]);
+    }
+  }
+	return super.handlePickupQuery(item);
 }
 
 function bool containsKey(string key, optional bool local, optional bool ignoreCase) {
@@ -45,8 +85,32 @@ function string get(string key, optional bool local, optional bool ignoreCase) {
   return "";
 }
 
+function putSync(string key, coerce string value) {
+  local int i;
+
+  if (key == "") return;
+
+  for (i = 0; i < globalKVLength; i++) {
+    if (globalKeys[i] == "") {
+      globalKeys[i] = key;
+      globalValues[i] = value;
+      return;
+    } else if (globalKeys[i] == key) {
+      globalValues[i] = value;
+      return;
+    }
+  }
+  globalKeys[globalKVLength] = key;
+  globalValues[globalKVLength] = value;
+  globalKVLength++;
+}
+
 function put(string key, coerce string value, optional bool local) {
   local int i;
+  local KvStore kvs;
+
+  if (key == "") return;
+
   if (local) {
     for (i = 0; i < localKVLength; i++) {
       if (localKeys[i] == "") {
@@ -62,19 +126,9 @@ function put(string key, coerce string value, optional bool local) {
     localValues[localKVLength] = value;
     localKVLength++;
   } else {
-    for (i = 0; i < globalKVLength; i++) {
-      if (globalKeys[i] == "") {
-        globalKeys[i] = key;
-        globalValues[i] = value;
-        return;
-      } else if (globalKeys[i] == key) {
-        globalValues[i] = value;
-        return;
-      }
+    foreach allactors(class'KvStore', kvs) {
+      kvs.putSync(key, value);
     }
-    globalKeys[globalKVLength] = key;
-    globalValues[globalKVLength] = value;
-    globalKVLength++;
   }
 }
 
@@ -108,6 +162,21 @@ function bool remove(string key, optional bool local, optional bool ignoreCase) 
   return false;
 }
 
+auto state Pickup {
+  function tick(float delta) {
+    local PlayerPawn p;
+    local KvStore kvs;
+    foreach allactors(class'PlayerPawn', p) {
+      touch(p);
+      return;
+    }
+    foreach allactors(class'KvStore', kvs) {
+      if (kvs != self) merge(kvs);
+    }
+  }
+}
+
 defaultproperties {
-  
+  bAlwaysRelevant=true
+  bDisplayableInv=false
 }

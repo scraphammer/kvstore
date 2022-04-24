@@ -91,8 +91,6 @@ function trigger(Actor other, Pawn eventInstigator) {
       break;
   }
 
-  //log("existingValue"@value@"expecting"@expectedValue@"checkAction"@checkAction@"equal?"@value == expectedValue);
-
   switch(checkAction) {
     case CA_PRESENT:
       if (value != "" && event != '') triggerEvent(event, self, eventInstigator); 
