@@ -1,3 +1,7 @@
+//=============================================================================
+// KvStorePropagator: Simple mutator that gives every player a KvStore.
+// Enables use of the KvStoreChecker and KvStoreSetter triggers.
+//=============================================================================
 class KvStorePropagator extends Mutator;
 
 var bool bPreBPInitialized;

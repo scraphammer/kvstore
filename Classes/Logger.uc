@@ -1,4 +1,9 @@
-class Logger extends Triggers;
+//=============================================================================
+// Logger: Logs a message when triggered.
+// This probably isn't very useful to most mappers.
+// Also has a pass-through on its event.
+//=============================================================================
+class Logger extends Triggers nousercreate;
 
 /** Logs a message when triggered. This probably isn't very useful to most mappers. Also has a pass-through on its event. */
 

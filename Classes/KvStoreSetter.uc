@@ -1,22 +1,27 @@
+//=============================================================================
+// KvStoreSetter: Stores or modifies a key/value pair in the player(s) for later checking.
+// Checking is performed by KvStoreChecker.
+//=============================================================================
 class KvStoreSetter extends Triggers;
 
 #exec texture import file=Textures\ikvsetter.pcx name=i_ikvsetter group=Icons mips=Off flags=2
 
-var() enum SetOperationType {
-  SOT_SET,
-  SOT_INCREMENT,
-  SOT_DECREMENT,
-} setOperation;
+var() enum EOperationType {
+  OT_SET,
+  OT_INCREMENT,
+  OT_DECREMENT,
+} OperationType;
 
-var() enum SetType {
-  ST_LOCAL,
-  ST_GLOBAL,
-} setting;
+var() enum EOperationScope {
+  OS_PERSONAL,
+  OS_GLOBAL,
+} OperationScope;
 
-var() bool ignoreCase;
-var() localized String keyToSet;
-var() localized String newValue;
-var() bool dontOverwriteExisting;
+var() bool bIgnoreCase;
+var() bool bOverwriteExisting;
+
+var() localized String TargetKey;
+var() localized String TargetValue;
 
 function trigger(Actor other, Pawn eventInstigator) {
   local Inventory i;
@@ -25,7 +30,7 @@ function trigger(Actor other, Pawn eventInstigator) {
   local PlayerPawn p;
   local int intValue;
 
-  if ((eventInstigator == none || PlayerPawn(eventInstigator) == none) && setting != ST_GLOBAL) return;
+  if ((eventInstigator == none || PlayerPawn(eventInstigator) == none) && OperationScope != OS_GLOBAL) return;
 
   if (eventInstigator != none && PlayerPawn(eventInstigator) != none) p = PlayerPawn(eventInstigator);
 
@@ -53,52 +58,52 @@ function trigger(Actor other, Pawn eventInstigator) {
 
   assert kvs != none;
 
-  switch(setOperation) {
-    case SOT_SET:
-      switch(setting) {
-        case ST_LOCAL:
-          value = kvs.get(keyToSet, true);
-          if (value == "" || !dontOverwriteExisting) kvs.put(keyToSet, newValue, true);
+  switch(OperationType) {
+    case OT_SET:
+      switch(OperationScope) {
+        case OS_PERSONAL:
+          value = kvs.get(TargetKey, true);
+          if (value == "" || bOverwriteExisting) kvs.put(TargetKey, TargetValue, true);
           break;
-        case ST_GLOBAL:
-          value = kvs.get(keyToSet, false);
-          if (value == "" || !dontOverwriteExisting) kvs.put(keyToSet, newValue, false);
-          break;
-      }
-      break;
-    case SOT_INCREMENT:
-      switch(setting) {
-        case ST_LOCAL:
-          value = kvs.get(keyToSet, true);
-          intValue = int(value);
-          if (value == "") kvs.put(keyToSet, 1, true);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(keyToSet, 1, true);
-          else kvs.put(keyToSet, intValue + 1, true);
-          break;
-        case ST_GLOBAL:
-          value = kvs.get(keyToSet, false);
-          intValue = int(value);
-          if (value == "") kvs.put(keyToSet, 1, false);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(keyToSet, 1, false);
-          else kvs.put(keyToSet, intValue + 1, false);
+        case OS_GLOBAL:
+          value = kvs.get(TargetKey, false);
+          if (value == "" || bOverwriteExisting) kvs.put(TargetKey, TargetValue, false);
           break;
       }
       break;
-    case SOT_DECREMENT:
-      switch(setting) {
-        case ST_LOCAL:
-          value = kvs.get(keyToSet, true);
+    case OT_INCREMENT:
+      switch(OperationScope) {
+        case OS_PERSONAL:
+          value = kvs.get(TargetKey, true);
           intValue = int(value);
-          if (value == "") kvs.put(keyToSet, -1, true);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(keyToSet, -1, true);
-          else kvs.put(keyToSet, intValue - 1, true);
+          if (value == "") kvs.put(TargetKey, 1, true);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, 1, true);
+          else kvs.put(TargetKey, intValue + 1, true);
           break;
-        case ST_GLOBAL:
-          value = kvs.get(keyToSet, false);
+        case OS_GLOBAL:
+          value = kvs.get(TargetKey, false);
           intValue = int(value);
-          if (value == "") kvs.put(keyToSet, -1, false);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(keyToSet, -1, false);
-          else kvs.put(keyToSet, intValue - 1, false);
+          if (value == "") kvs.put(TargetKey, 1, false);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, 1, false);
+          else kvs.put(TargetKey, intValue + 1, false);
+          break;
+      }
+      break;
+    case OT_DECREMENT:
+      switch(OperationScope) {
+        case OS_PERSONAL:
+          value = kvs.get(TargetKey, true);
+          intValue = int(value);
+          if (value == "") kvs.put(TargetKey, -1, true);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, -1, true);
+          else kvs.put(TargetKey, intValue - 1, true);
+          break;
+        case OS_GLOBAL:
+          value = kvs.get(TargetKey, false);
+          intValue = int(value);
+          if (value == "") kvs.put(TargetKey, -1, false);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, -1, false);
+          else kvs.put(TargetKey, intValue - 1, false);
           break;
       }
       break;
@@ -108,8 +113,9 @@ function trigger(Actor other, Pawn eventInstigator) {
 }
 
 defaultproperties {
-  setting=ST_LOCAL
-  setOperation=SOT_SET
-  ignoreCase=true
-  texture=Texture'i_ikvsetter'
+  OperationScope=OS_GLOBAL
+  OperationType=OT_SET
+  bIgnoreCase=True
+  bOverwriteExisting=True
+  Texture=Texture'i_ikvsetter'
 }

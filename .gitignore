@@ -1,2 +1,5 @@
 # idk what needs to be ignored right now
 Deprecated/*
+
+# VSCode History
+.history
