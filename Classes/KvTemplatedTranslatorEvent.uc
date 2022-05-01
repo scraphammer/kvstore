@@ -1,6 +1,6 @@
 //=============================================================================
 // KvTemplatedTranslatorEvent: when triggered or touched, replaces strings in its message with values from the instigator's KvStore.
-// Also triggers its event when it is done, allowing for multiple events to be chainged together.
+// Also triggers its event when it is done, allowing for multiple events to be chained together.
 //=============================================================================
 class KvTemplatedTranslatorEvent extends TranslatorEvent;
 
@@ -123,8 +123,8 @@ function string filterMessage(Actor other) {
         else replacedStrings[i] = replacements[i].defaultReplacement;
         break;
       case OP_NOT_PRESENT:
-        if (value != "") replacedStrings[i] = replacements[i].defaultReplacement;
-        else replacedStrings[i] = replacements[i].replaceWith;
+        if (value == "") replacedStrings[i] = replacements[i].replaceWith;
+        else replacedStrings[i] = replacements[i].defaultReplacement;
         break;
       case OP_EQUAL:
         if (value == replacements[i].targetValue) replacedStrings[i] = replacements[i].replaceWith;

@@ -3,7 +3,7 @@
 // Spawns actors and runs them as a test, logging the test results.
 // This probably isn't the actor you want to place in your map. Or maybe it is. You do you.
 //=============================================================================
-class KvStoreTestRunner extends Actor;
+class KvStoreTestRunner extends Actor nousercreate;
 
 var bool bPostBPInitialized;
 var array<name> testEvents;

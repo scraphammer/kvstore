@@ -7,22 +7,22 @@ class KvStoreSetter extends Triggers;
 
 #exec texture import file=Textures\ikvsetter.pcx name=i_ikvsetter group=Icons mips=Off flags=2
 
-var() enum EOperationType {
+var(KvStore) enum EOperationType {
   OT_SET,
   OT_INCREMENT,
   OT_DECREMENT,
 } OperationType;
 
-var() enum EOperationScope {
+var(KvStore) enum EOperationScope {
   OS_PERSONAL,
   OS_GLOBAL,
 } OperationScope;
 
-var() bool bIgnoreCase;
-var() bool bOverwriteExisting;
+var(KvStore) bool bIgnoreCase;
+var(KvStore) bool bOverwriteExisting;
 
-var() localized String TargetKey;
-var() localized String TargetValue;
+var(KvStore) localized String TargetKey;
+var(KvStore) localized String TargetValue;
 
 function trigger(Actor other, Pawn eventInstigator) {
   local Inventory i;
