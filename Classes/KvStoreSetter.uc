@@ -63,11 +63,11 @@ function trigger(Actor other, Pawn eventInstigator) {
       switch(OperationScope) {
         case OS_PERSONAL:
           value = kvs.get(TargetKey, true);
-          if (value == "" || !dontOverwriteExisting) kvs.put(TargetKey, TargetValue, true);
+          if (value == "" || bOverwriteExisting) kvs.put(TargetKey, TargetValue, true);
           break;
         case OS_GLOBAL:
           value = kvs.get(TargetKey, false);
-          if (value == "" || !dontOverwriteExisting) kvs.put(TargetKey, TargetValue, false);
+          if (value == "" || bOverwriteExisting) kvs.put(TargetKey, TargetValue, false);
           break;
       }
       break;
@@ -77,14 +77,14 @@ function trigger(Actor other, Pawn eventInstigator) {
           value = kvs.get(TargetKey, true);
           intValue = int(value);
           if (value == "") kvs.put(TargetKey, 1, true);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(TargetKey, 1, true);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, 1, true);
           else kvs.put(TargetKey, intValue + 1, true);
           break;
         case OS_GLOBAL:
           value = kvs.get(TargetKey, false);
           intValue = int(value);
           if (value == "") kvs.put(TargetKey, 1, false);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(TargetKey, 1, false);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, 1, false);
           else kvs.put(TargetKey, intValue + 1, false);
           break;
       }
@@ -95,14 +95,14 @@ function trigger(Actor other, Pawn eventInstigator) {
           value = kvs.get(TargetKey, true);
           intValue = int(value);
           if (value == "") kvs.put(TargetKey, -1, true);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(TargetKey, -1, true);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, -1, true);
           else kvs.put(TargetKey, intValue - 1, true);
           break;
         case OS_GLOBAL:
           value = kvs.get(TargetKey, false);
           intValue = int(value);
           if (value == "") kvs.put(TargetKey, -1, false);
-          else if (intValue == 0 && !dontOverwriteExisting) kvs.put(TargetKey, -1, false);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, -1, false);
           else kvs.put(TargetKey, intValue - 1, false);
           break;
       }
