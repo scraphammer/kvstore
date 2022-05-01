@@ -3,7 +3,7 @@
 // Spawns actors and runs them as a test, logging the test results.
 // This probably isn't the actor you want to place in your map. Or maybe it is. You do you.
 //=============================================================================
-class KvStoreTestRunner extends Actor nousercreate;
+class KvStoreTestRunner extends Actor;
 
 /** Spawns actors and runs them as a test, logging the test results. This probably isn't the actor you want to place in your map. Or maybe it is. You do you. */
 
@@ -35,10 +35,10 @@ function PostBeginPlay() {
     logger = spawn(class'Logger');
     logger.tag = 'test1Log1_';
     logger.event = tag;
-    logger.logMessage = "PASS - Test 1 - Happy path for local key if present";
+    logger.logMessage = "PASS - Test 1 - Happy path for personal key if present";
     logger = spawn(class'Logger');
     logger.tag = 'test1Log2_';
-    logger.logMessage = "FAIL - Test 1 - Happy path for local key if present";
+    logger.logMessage = "FAIL - Test 1 - Happy path for personal key if present";
     kvStoreSetter = spawn(class'KvStoreSetter');
     kvStoreSetter.TargetKey = "test1Key1_" $ name;
     kvStoreSetter.TargetValue = "test1Key1Value_" $ name;
@@ -87,10 +87,10 @@ function PostBeginPlay() {
     logger = spawn(class'Logger');
     logger.tag = 'test3Log1_';
     logger.event = tag;
-    logger.logMessage = "PASS - Test 3 - Happy path for CheckScope cascading key value";
+    logger.logMessage = "PASS - Test 3 - Happy path for checking cascading key value";
     logger = spawn(class'Logger');
     logger.tag = 'test3Log2_';
-    logger.logMessage = "FAIL - Test 3 - Happy path for CheckScope cascading key value";
+    logger.logMessage = "FAIL - Test 3 - Happy path for checking cascading key value";
     kvStoreSetter = spawn(class'KvStoreSetter');
     kvStoreSetter.TargetKey = "test3Key1_" $ name;
     kvStoreSetter.TargetValue = "test3Key1Value_" $ name;
@@ -329,13 +329,13 @@ function PostBeginPlay() {
     logger = spawn(class'Logger');
     logger.tag = 'test8Log1_';
     logger.event = tag;
-    logger.logMessage = "PASS - Test 8 - Setting a value here, then CheckScope it elsewhere";
+    logger.logMessage = "PASS - Test 8 - Setting a value here, then checking it elsewhere";
     logger = spawn(class'Logger');
     logger.tag = 'test8Log2_';
-    logger.logMessage = "FAIL - Test 8 - Setting a value here, then CheckScope it elsewhere";
+    logger.logMessage = "FAIL - Test 8 - Setting a value here, then checking it elsewhere";
     logger = spawn(class'Logger');
     logger.tag = 'test8Log3_';
-    logger.logMessage = "FAIL - Test 8 - Setting a value here, then CheckScope it elsewhere (Only one player, cannot run test)";
+    logger.logMessage = "FAIL - Test 8 - Setting a value here, then checking it elsewhere (Only one player, cannot run test)";
     kvStoreSetter = spawn(class'KvStoreSetter');
     kvStoreSetter.TargetKey = "test8Key1_" $ name;
     kvStoreSetter.TargetValue = "test8Key1Value_" $ name;
@@ -360,13 +360,13 @@ function PostBeginPlay() {
     logger = spawn(class'Logger');
     logger.tag = 'test9Log1_';
     logger.event = tag;
-    logger.logMessage = "PASS - Test 9 - Setting a value elsewhere, then CheckScope it here";
+    logger.logMessage = "PASS - Test 9 - Setting a value elsewhere, then checking it here";
     logger = spawn(class'Logger');
     logger.tag = 'test9Log2_';
-    logger.logMessage = "FAIL - Test 9 - Setting a value elsewhere, then CheckScope it here";
+    logger.logMessage = "FAIL - Test 9 - Setting a value elsewhere, then checking it here";
     logger = spawn(class'Logger');
     logger.tag = 'test9Log3_';
-    logger.logMessage = "FAIL - Test 9 - Setting a value elsewhere, then CheckScope it here (Only one player, cannot run test)";
+    logger.logMessage = "FAIL - Test 9 - Setting a value elsewhere, then checking it here (Only one player, cannot run test)";
     eventInstigatorFunger = spawn(class'EventInstigatorFunger');
     eventInstigatorFunger.tag = 'test9Funger1_';
     eventInstigatorFunger.event = 'test9Set1_';
