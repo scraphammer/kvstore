@@ -132,11 +132,11 @@ function put(string key, coerce string value, optional bool personal) {
   }
 }
 
-function bool remove(string key, optional bool personal, optional bool bIgnoreCase) {
+function bool remove(string key, optional bool personal, optional bool ignoreCase) {
   local int i;
   if (personal) {
     for (i = 0; i < personalKVLength; i++) {
-      if (bIgnoreCase && caps(personalKeys[i]) == caps(key)) {
+      if (ignoreCase && caps(personalKeys[i]) == caps(key)) {
         personalKeys[i] = "";
         personalValues[i] = "";
         return true;
@@ -148,7 +148,7 @@ function bool remove(string key, optional bool personal, optional bool bIgnoreCa
     }
   } else {
     for (i = 0; i < globalKVLength; i++) {
-      if (bIgnoreCase && caps(globalKeys[i]) == caps(key))  {
+      if (ignoreCase && caps(globalKeys[i]) == caps(key))  {
         globalKeys[i] = "";
         globalValues[i] = "";
         return true;
