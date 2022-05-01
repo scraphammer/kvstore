@@ -66,6 +66,11 @@ function trigger(Actor other, Pawn eventInstigator) {
       }
       i = i.inventory;
     }
+
+    if (kvs == none) {
+      kvs = spawn(class'KvStore');
+      kvs.touch(p);
+    }
   } else {
     foreach allActors(class'PlayerPawn', p) {
       i = p.inventory;
@@ -75,6 +80,11 @@ function trigger(Actor other, Pawn eventInstigator) {
           break;
         }
         i = i.inventory;
+      }
+
+      if (kvs == none) {
+        kvs = spawn(class'KvStore');
+        kvs.touch(p);
       }
       if (p == eventInstigator && kvs != none) break;
     }
@@ -86,13 +96,13 @@ function trigger(Actor other, Pawn eventInstigator) {
 
   switch(CheckScope) {
     case CS_PERSONAL:
-      value = kvs.get(TargetKey, true, bIgnoreCase);
+      value = kvs.get(targetKey, true, bIgnoreCase);
       break;
     case CS_GLOBAL:
-      value = kvs.get(TargetKey, false, bIgnoreCase);
+      value = kvs.get(targetKey, false, bIgnoreCase);
       break;
     case CS_CASCADING:
-      value = kvs.getCascading(TargetKey, bIgnoreCase);
+      value = kvs.getCascading(targetKey, bIgnoreCase);
       break;
   }
 

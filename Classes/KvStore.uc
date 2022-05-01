@@ -179,4 +179,5 @@ auto state Pickup {
 defaultproperties {
   bAlwaysRelevant=true
   bDisplayableInv=false
+	PickupMessage=""
 }

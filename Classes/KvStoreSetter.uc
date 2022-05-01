@@ -1,6 +1,7 @@
 //=============================================================================
 // KvStoreSetter: Stores or modifies a key/value pair in the player(s) for later checking.
 // Checking is performed by KvStoreChecker.
+// Also triggers its event when it is done, allowing for multiple events to be chainged together.
 //=============================================================================
 class KvStoreSetter extends Triggers;
 
@@ -29,8 +30,9 @@ function trigger(Actor other, Pawn eventInstigator) {
   local String value;
   local PlayerPawn p;
   local int intValue;
+  local int newValueAsInt;
 
-  if ((eventInstigator == none || PlayerPawn(eventInstigator) == none) && OperationScope != OS_GLOBAL) return;
+  if ((eventInstigator == none || PlayerPawn(eventInstigator) == none) && operationScope != OS_GLOBAL) return;
 
   if (eventInstigator != none && PlayerPawn(eventInstigator) != none) p = PlayerPawn(eventInstigator);
 
@@ -58,58 +60,66 @@ function trigger(Actor other, Pawn eventInstigator) {
 
   assert kvs != none;
 
-  switch(OperationType) {
+  switch(operationType) {
     case OT_SET:
-      switch(OperationScope) {
+      switch(operationScope) {
         case OS_PERSONAL:
-          value = kvs.get(TargetKey, true);
-          if (value == "" || bOverwriteExisting) kvs.put(TargetKey, TargetValue, true);
+          value = kvs.get(targetKey, true);
+          if (value == "" || bOverwriteExisting) kvs.put(targetKey, targetValue, true);
           break;
         case OS_GLOBAL:
           value = kvs.get(TargetKey, false);
-          if (value == "" || bOverwriteExisting) kvs.put(TargetKey, TargetValue, false);
+          if (value == "" || bOverwriteExisting) kvs.put(targetKey, targetValue, false);
           break;
       }
       break;
     case OT_INCREMENT:
-      switch(OperationScope) {
+      switch(operationScope) {
         case OS_PERSONAL:
-          value = kvs.get(TargetKey, true);
+          value = kvs.get(targetKey, true);
           intValue = int(value);
-          if (value == "") kvs.put(TargetKey, 1, true);
-          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, 1, true);
-          else kvs.put(TargetKey, intValue + 1, true);
+          if (targetValue != "" && int(targetValue) != 0) newValueAsInt = int(targetValue);
+          else newValueAsInt = 1;
+          if (value == "") kvs.put(targetKey, newValueAsInt, true);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(targetKey, newValueAsInt, true);
+          else kvs.put(TargetKey, intValue + newValueAsInt, true);
           break;
         case OS_GLOBAL:
-          value = kvs.get(TargetKey, false);
+          value = kvs.get(targetKey, false);
           intValue = int(value);
-          if (value == "") kvs.put(TargetKey, 1, false);
-          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, 1, false);
-          else kvs.put(TargetKey, intValue + 1, false);
+          if (targetValue != "" && int(targetValue) != 0) newValueAsInt = int(targetValue);
+          else newValueAsInt = 1;
+          if (value == "") kvs.put(targetKey, newValueAsInt, false);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, newValueAsInt, false);
+          else kvs.put(TargetKey, intValue + newValueAsInt, false);
           break;
       }
       break;
     case OT_DECREMENT:
-      switch(OperationScope) {
+      switch(operationScope) {
         case OS_PERSONAL:
-          value = kvs.get(TargetKey, true);
+          value = kvs.get(targetKey, true);
           intValue = int(value);
-          if (value == "") kvs.put(TargetKey, -1, true);
-          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, -1, true);
-          else kvs.put(TargetKey, intValue - 1, true);
+          if (targetValue != "" && int(targetValue) != 0) newValueAsInt = int(targetValue);
+          else newValueAsInt = 1;
+          if (value == "") kvs.put(targetKey, -newValueAsInt, true);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(targetKey, -newValueAsInt, true);
+          else kvs.put(targetKey, intValue - newValueAsInt, true);
           break;
         case OS_GLOBAL:
-          value = kvs.get(TargetKey, false);
+          value = kvs.get(targetKey, false);
           intValue = int(value);
-          if (value == "") kvs.put(TargetKey, -1, false);
-          else if (intValue == 0 && bOverwriteExisting) kvs.put(TargetKey, -1, false);
-          else kvs.put(TargetKey, intValue - 1, false);
+          if (targetValue != "" && int(targetValue) != 0) newValueAsInt = int(targetValue);
+          else newValueAsInt = 1;
+          if (value == "") kvs.put(targetKey, -newValueAsInt, false);
+          else if (intValue == 0 && bOverwriteExisting) kvs.put(targetKey, -newValueAsInt, false);
+          else kvs.put(TargetKey, intValue - newValueAsInt, false);
           break;
       }
       break;
   }
 
-  triggerEvent(event, self, eventInstigator);
+  if (event != '') triggerEvent(event, self, eventInstigator);
 }
 
 defaultproperties {
