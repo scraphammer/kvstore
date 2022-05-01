@@ -1,4 +1,9 @@
-class EventInstigatorFunger extends Triggers;
+//=============================================================================
+// EventInstigatorFunger: Internal developer class for testing.
+// Tries to find a PlayerPawn other than the event instigator and fires its event with the other player as the instigator.
+// This is probably not useful to most mappers. If there is only one of such pawn it fires an alternate event.
+//=============================================================================
+class EventInstigatorFunger extends Triggers nousercreate;
 
 //** Tries to find a PlayerPawn other than the event instigator and fires its event with the other player as the instigator. This is probably not useful to most mappers. If there is only one of such pawn it fires an alternate event. */
 
