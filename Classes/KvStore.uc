@@ -2,7 +2,7 @@ class KvStore extends Inventory nousercreate;
 
 var travel array<string> personalKeys;
 var travel array<string> personalValues;
-var travel int localKVLength;
+var travel int personalKVLength;
 
 var travel array<string> globalKeys;
 var travel array<string> globalValues;
@@ -53,32 +53,32 @@ function bool handlePickupQuery(Inventory item) {
 	return super.handlePickupQuery(item);
 }
 
-function bool containsKey(string key, optional bool local, optional bool bIgnoreCase) {
+function bool containsKey(string key, optional bool personal, optional bool ignoreCase) {
   local string value;
-  value = get(key, local, bIgnoreCase);
+  value = get(key, personal, ignoreCase);
   return value != "";
 }
 
-function string getCascading(string key, optional bool bIgnoreCase) {
+function string getCascading(string key, optional bool ignoreCase) {
   local string value;
-  value = get(key, true, bIgnoreCase);
+  value = get(key, true, ignoreCase);
   if (value != "") return value;
-  value = get(key, false, bIgnoreCase);
+  value = get(key, false, ignoreCase);
   return value;
 }
 
-function string get(string key, optional bool local, optional bool bIgnoreCase) {
+function string get(string key, optional bool personal, optional bool ignoreCase) {
   local int i;
   //linear searching is slow here but should be "good enough" in this case.
   //also I do not want to implement hash maps in uscript myself
-  if (local) {
-    for (i = 0; i < localKVLength; i++) {
-      if (bIgnoreCase && caps(personalKeys[i]) == caps(key)) return personalValues[i];
+  if (personal) {
+    for (i = 0; i < personalKVLength; i++) {
+      if (ignoreCase && caps(personalKeys[i]) == caps(key)) return personalValues[i];
       else if (personalKeys[i] == key) return personalValues[i];
     }
   } else {
     for (i = 0; i < globalKVLength; i++) {
-      if (bIgnoreCase && caps(globalKeys[i]) == caps(key)) return globalValues[i];
+      if (ignoreCase && caps(globalKeys[i]) == caps(key)) return globalValues[i];
       else if (globalKeys[i] == key) return globalValues[i];
     }
   }
@@ -105,14 +105,14 @@ function putSync(string key, coerce string value) {
   globalKVLength++;
 }
 
-function put(string key, coerce string value, optional bool local) {
+function put(string key, coerce string value, optional bool personal) {
   local int i;
   local KvStore kvs;
 
   if (key == "") return;
 
-  if (local) {
-    for (i = 0; i < localKVLength; i++) {
+  if (personal) {
+    for (i = 0; i < personalKVLength; i++) {
       if (personalKeys[i] == "") {
         personalKeys[i] = key;
         personalValues[i] = value;
@@ -122,9 +122,9 @@ function put(string key, coerce string value, optional bool local) {
         return;
       }
     }
-    personalKeys[localKVLength] = key;
-    personalValues[localKVLength] = value;
-    localKVLength++;
+    personalKeys[personalKVLength] = key;
+    personalValues[personalKVLength] = value;
+    personalKVLength++;
   } else {
     foreach allactors(class'KvStore', kvs) {
       kvs.putSync(key, value);
@@ -132,10 +132,10 @@ function put(string key, coerce string value, optional bool local) {
   }
 }
 
-function bool remove(string key, optional bool local, optional bool bIgnoreCase) {
+function bool remove(string key, optional bool personal, optional bool bIgnoreCase) {
   local int i;
-  if (local) {
-    for (i = 0; i < localKVLength; i++) {
+  if (personal) {
+    for (i = 0; i < personalKVLength; i++) {
       if (bIgnoreCase && caps(personalKeys[i]) == caps(key)) {
         personalKeys[i] = "";
         personalValues[i] = "";

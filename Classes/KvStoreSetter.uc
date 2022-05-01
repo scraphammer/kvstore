@@ -12,7 +12,7 @@ var() enum EOperationType {
   OT_DECREMENT,
 } OperationType;
 
-var() enum EOperationScopeType {
+var() enum EOperationScope {
   OS_PERSONAL,
   OS_GLOBAL,
 } OperationScope;
