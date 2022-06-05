@@ -70,7 +70,7 @@ function trigger(Actor other, Pawn eventInstigator) {
   if (event != '') triggerEvent(event, self, eventInstigator);
 }
 
-function string filterMessage(Actor other) {
+static final function string filterMessage(Actor other, string message, string templateString, KvTemplatedTranslatorEventReplacement replacements[8]) {
   local PlayerPawn p;
   local Inventory inventory;
   local int i;
@@ -94,7 +94,7 @@ function string filterMessage(Actor other) {
   }
   
   if (kvs == none) {
-    kvs = spawn(class'KvStore');
+    kvs = other.spawn(class'KvStore');
     kvs.touch(p);
   }
 
@@ -196,7 +196,7 @@ function touch(Actor other){
 			}
 			if (!bHitOnce) Trans.bNewMessage = true;
 			else Trans.bNotNewMessage = true;
-			Trans.NewMessage = filterMessage(other);
+			Trans.NewMessage = filterMessage(other, message, templateString, replacements);
 			if (!bHitOnce) Pawn(Other).ClientMessage(M_NewMessage);
 			else Pawn(Other).ClientMessage(M_TransMessage);
 			bHitOnce = true;

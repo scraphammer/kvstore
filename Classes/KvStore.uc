@@ -15,6 +15,18 @@ replication {
     globalKeys, globalValues, globalKVLength;
 }
 
+function string inventoryCapsString(name property, Pawn other, Actor test) {
+  if (Inventory(test) == none) return "";
+  switch (Inventory(test).autoSwitchPriority) {
+    case 1: //global
+      return get(Inventory(test).itemName, false, Inventory(test).bActivatable);
+    case 2: //cascading
+      return getCascading(Inventory(test).itemName, Inventory(test).bActivatable);
+    default: //personal
+      return get(Inventory(test).itemName, true, Inventory(test).bActivatable);
+  }
+}
+
 function destroyed() {
   local KvStore kvs;
   local int i;
