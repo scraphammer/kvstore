@@ -14,7 +14,7 @@ function Trigger (actor Other, pawn EventInstigator) {
   
   targetValue = "";
   for (i = 0; i < Length; i++) {
-    targetValue $= mid(digits, rand(Length), 1);
+    targetValue $= mid(digits, rand(len(Digits)), 1);
   }
 
   super.trigger(other, eventInstigator);
