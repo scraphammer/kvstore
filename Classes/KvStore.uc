@@ -16,14 +16,44 @@ replication {
 }
 
 function string inventoryCapsString(name property, Pawn other, Actor test) {
+  local Inventory inventory;
   if (Inventory(test) == none) return "";
-  switch (Inventory(test).autoSwitchPriority) {
-    case 1: //global
-      return get(Inventory(test).itemName, false, Inventory(test).bActivatable);
-    case 2: //cascading
-      return getCascading(Inventory(test).itemName, Inventory(test).bActivatable);
-    default: //personal
-      return get(Inventory(test).itemName, true, Inventory(test).bActivatable);
+
+  inventory = Inventory(test);
+
+  //inventory.bIsAnArmor => whether to write or read
+
+  if (inventory.bIsAnArmor) {
+    //write
+
+    //itemName => key
+    //M_Activated => value
+    //autoSwitchPriority => EOperationScope
+    //bActivatable => bIgnoreCase
+
+    switch (inventory.autoSwitchPriority) {
+      case 1: //personal
+        put(inventory.itemName, inventory.M_Activated, true);
+        return inventory.M_Activated;
+      default: //global
+        put(inventory.itemName, inventory.M_Activated, false);
+        return inventory.M_Activated;
+    }
+  } else {
+    //read
+
+    //itemName => key
+    //autoSwitchPriority => ECheckScope
+    //bActivatable => inventoryCapsStringCaller
+    
+    switch (inventory.autoSwitchPriority) {
+      case 1: //global
+        return get(inventory.itemName, false, inventory.bActivatable);
+      case 2: //cascading
+        return getCascading(inventory.itemName, inventory.bActivatable);
+      default: //personal
+        return get(inventory.itemName, true, inventory.bActivatable);
+    }
   }
 }
 
